@@ -56,38 +56,39 @@ new Vue({
     el: '#task_management2',
     data() {
         return {
-            dragging_id: null,
-            drag_over_item_id: null,
+            dragging_serial: null,
+            drag_over_item_serial: null,
             drag_over_item_index: null,
             dragging_time: 0,
+            dragging_time_end: 2,
             items: [
                 {
-                    id: 0,
+                    serial: 0,
                     title: 'Item A',
                     list: 1,
                 },
                 {
-                    id: 1,
+                    serial: 1,
                     title: 'Item B',
                     list: 1,
                 },
                 {
-                    id: 2,
+                    serial: 2,
                     title: 'Item C',
                     list: 2,
                 },
                 {
-                    id: 3,
+                    serial: 3,
                     title: 'Item AA',
                     list: 1,
                 },
                 {
-                    id: 4,
+                    serial: 4,
                     title: 'Item BB',
                     list: 1,
                 },
                 {
-                    id: 5,
+                    serial: 5,
                     title: 'Item CC',
                     list: 2,
                 },
@@ -98,8 +99,9 @@ new Vue({
         startDrag(evt, item) {
             evt.dataTransfer.dropEffect = 'move'
             evt.dataTransfer.effectAllowed = 'move'
-            evt.dataTransfer.setData('itemID', item.id)
-            this.dragging_id = item.id;
+            evt.dataTransfer.setData('itemserial', item.serial)
+            this.dragging_serial = item.serial;
+            this.dragging_time = 0;
             setInterval(() => {
                 this.dragging_time++;
             }, 1000);
@@ -108,16 +110,18 @@ new Vue({
             document.querySelector('.placeholder')?.remove();
         },
         // onDrop(evt, list) {
-        //     // const itemID = evt.dataTransfer.getData('itemID')
-        //     const itemID = this.dragging_id;
-        //     const item = this.items.find((item) => item.id == itemID)
+        //     // const itemserial = evt.dataTransfer.getData('itemserial')
+        //     const itemserial = this.dragging_serial;
+        //     const item = this.items.find((item) => item.serial == itemserial)
         //     item.list = list
         // },
         onDrop: function (container, list) {
             const draggableElements = [...container.target.querySelectorAll('.drag-el')]
             let y = container.clientY;
 
-            if(this.dragging_time < 2){
+            document.querySelector('.placeholder')?.remove();
+
+            if(this.dragging_time < this.dragging_time_end){
                 return 0;
             }
 
@@ -131,7 +135,7 @@ new Vue({
                 }
             }, { offset: Number.NEGATIVE_INFINITY }).element
 
-            const item = this.items.find((item) => item.id == this.dragging_id)
+            const item = this.items.find((item) => item.serial == this.dragging_serial)
             item.list = list;
 
             if (beforeElement == null) {
@@ -142,20 +146,17 @@ new Vue({
                 last_el = container.currentTarget.querySelector('.drag-el:last-child'):
                 last_el = container.target.querySelector('.drag-el:last-child')
 
-                const itemIndex = this.items.findIndex((i) => i.id == item.id)
+                const itemIndex = this.items.findIndex((i) => i.serial == item.serial)
                 
                 let tempItem = {...item};
-                tempItem.id = last_el ? (+last_el.dataset.id) + 1 : tempItem.id;
+                tempItem.serial = last_el ? (+last_el.dataset.serial) + 1 : tempItem.serial;
                 
                 let tempItems = [...this.items];
                 tempItems.splice(itemIndex,1);
                 tempItems.push(tempItem);
                 this.items = [...tempItems];
-                document.querySelector('.placeholder')?.remove();
 
-            } else {
-                // console.log(list);
-                let beforeElementId = beforeElement.dataset.id;                
+            } else {            
                 let tempItem = {...item};
 
                 const itemIndex = this.items.findIndex((item) => item.id == this.dragging_id)
@@ -165,7 +166,6 @@ new Vue({
                 tempItems.splice(itemIndex,1);
                 tempItems.splice(beforeElementDataIndex,0,tempItem);
                 this.items = [...tempItems];
-                document.querySelector('.placeholder')?.remove();
             }
         },
         onDragOver: function (container, list) {
@@ -182,10 +182,11 @@ new Vue({
                 }
             }, { offset: Number.NEGATIVE_INFINITY }).element
 
-            // const item = this.items.find((item) => item.id == this.dragging_id)
-            // item ? item.list = list : '';
-
             document.querySelector('.placeholder')?.remove();
+            if(this.dragging_time < this.dragging_time_end){
+                return 0;
+            }
+
             if (beforeElement == null) {
                 container.currentTarget.insertAdjacentHTML('beforeend',"<div class='placeholder'></div>");
             } else {
