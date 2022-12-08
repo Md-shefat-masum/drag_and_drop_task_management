@@ -25,44 +25,52 @@
 			padding: 5px;
 		}
 	</style>
-	<div class="" id="task_management2" >
-		<div style="display: flex; gap: 20px;">
+	<div class="" id="task_management2">
+		<div style="display: flex; gap: 20px; flex-wrap: wrap;">
 			<div class="drop-zone" 
-				@drop="onDrop($event, 1)" 
-				@dragover="onDragOver($event, 1)"
+				v-for="(parent, index1) in items" 
+				:key="index1"
+				@drop="onDrop($event, parent)" 
+				@dragover="onDragOver($event, parent)"
 				@dragover.prevent 
 				@dragenter.prevent>
-				<div v-for="(item, index) in listOne" 
-					:key="index" 
-					draggable 
+
+				<p>{{parent.title}}</p>
+
+				<div v-for="(item, index) in parent.childrens" 
 					@dragend="onDragEnd"
-					@dragstart="startDrag($event, item)" 
-					:data-serial="item.serial"
-					:data-index="index"
-					class="drag-el">
-					{{ item.title }}
-				</div>
-			</div>
-			<!-- @dragover="onDragOver($event, 2)" -->
-			<div class="drop-zone" 
-				@drop="onDrop($event, 2)" 
-				@dragover="onDragOver($event, 2)"
-				@dragend="onDragEnd"
-				@dragover.prevent 
-				@dragenter.prevent>
-				<div v-for="(item, index) in listTwo" 
+					@dragstart="startDrag($event, item, index, parent)" 
 					:key="index" 
-					draggable 
-					@dragstart="startDrag($event, item)"
-					:data-serial="item.serial"
-					:data-index="index"
+					:data-serial="item.serial" 
+					:data-index="index" 
 					class="drag-el">
+
+					<button class="drag_btn" draggable>drug</button>
 					{{ item.title }}
+					
 				</div>
+
 			</div>
 		</div>
 	</div>
 
+	<div class="drop-zone" @drop="onDrop($event, 1)" @dragover="onDragOver($event, 1)" @dragover.prevent
+		@dragenter.prevent>
+		<div v-for="(item, index) in listOne" :key="index" @dragend="onDragEnd" @dragstart="startDrag($event, item)"
+			:data-serial="item.serial" :data-index="index" class="drag-el">
+			<button class="drag_btn" draggable>drug</button>
+			{{ item.title }}
+		</div>
+	</div>
+	<!-- @dragover="onDragOver($event, 2)" -->
+	<div class="drop-zone" @drop="onDrop($event, 2)" @dragover="onDragOver($event, 2)" @dragend="onDragEnd"
+		@dragover.prevent @dragenter.prevent>
+		<div v-for="(item, index) in listTwo" :key="index" @dragstart="startDrag($event, item)"
+			:data-serial="item.serial" :data-index="index" class="drag-el">
+			<button class="drag_btn" draggable>drug</button>
+			{{ item.title }}
+		</div>
+	</div>
 </body>
 
 </html>

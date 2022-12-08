@@ -28,4 +28,7 @@ body {
   border-radius: 5px;
   margin: 7px 0px;
 }
+.drag_btn {
+  cursor: grab;
+}
 /*# sourceMappingURL=./styles.css.map */
