@@ -29,13 +29,16 @@
 		<div>
 			<div class="drop-zone" 
 				@drop="onDrop($event, 1)" 
-				@dragover="onDragOver($event, 2)"
+				@dragover="onDragOver($event, 1)"
 				@dragover.prevent 
 				@dragenter.prevent>
-				<div v-for="item in listOne" 
-					:key="item.title" 
+				<div v-for="(item, index) in listOne" 
+					:key="index" 
 					draggable 
+					@dragend="onDragEnd"
 					@dragstart="startDrag($event, item)" 
+					:data-id="item.id"
+					:data-index="index"
 					class="drag-el">
 					{{ item.title }}
 				</div>
@@ -44,10 +47,11 @@
 			<div class="drop-zone" 
 				@drop="onDrop($event, 2)" 
 				@dragover="onDragOver($event, 2)"
+				@dragend="onDragEnd"
 				@dragover.prevent 
 				@dragenter.prevent>
 				<div v-for="(item, index) in listTwo" 
-					:key="item.title" 
+					:key="index" 
 					draggable 
 					@dragstart="startDrag($event, item)"
 					:data-id="item.id"

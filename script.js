@@ -59,6 +59,7 @@ new Vue({
             dragging_id: null,
             drag_over_item_id: null,
             drag_over_item_index: null,
+            dragging_time: 0,
             items: [
                 {
                     id: 0,
@@ -75,6 +76,21 @@ new Vue({
                     title: 'Item C',
                     list: 2,
                 },
+                {
+                    id: 3,
+                    title: 'Item AA',
+                    list: 1,
+                },
+                {
+                    id: 4,
+                    title: 'Item BB',
+                    list: 1,
+                },
+                {
+                    id: 5,
+                    title: 'Item CC',
+                    list: 2,
+                },
             ],
         }
     },
@@ -84,6 +100,12 @@ new Vue({
             evt.dataTransfer.effectAllowed = 'move'
             evt.dataTransfer.setData('itemID', item.id)
             this.dragging_id = item.id;
+            setInterval(() => {
+                this.dragging_time++;
+            }, 1000);
+        },
+        onDragEnd: function(){
+            document.querySelector('.placeholder')?.remove();
         },
         // onDrop(evt, list) {
         //     // const itemID = evt.dataTransfer.getData('itemID')
@@ -95,7 +117,11 @@ new Vue({
             const draggableElements = [...container.target.querySelectorAll('.drag-el')]
             let y = container.clientY;
 
-            let afterElement = draggableElements.reduce((closest, child) => {
+            if(this.dragging_time < 2){
+                return 0;
+            }
+
+            let beforeElement = draggableElements.reduce((closest, child) => {
                 const box = child.getBoundingClientRect()
                 const offset = y - box.top - box.height / 2
                 if (offset < 0 && offset > closest.offset) {
@@ -108,29 +134,39 @@ new Vue({
             const item = this.items.find((item) => item.id == this.dragging_id)
             item.list = list;
 
-            if (afterElement == null) {
+            if (beforeElement == null) {
                 // container.appendChild(draggable)
-            } else {
-                // console.log(list);
-                let afterElementId = afterElement.dataset.id;                
+                let last_el = null;
+                
+                container.currentTarget.querySelector('.drag-el:last-child')?
+                last_el = container.currentTarget.querySelector('.drag-el:last-child'):
+                last_el = container.target.querySelector('.drag-el:last-child')
+
+                const itemIndex = this.items.findIndex((i) => i.id == item.id)
+                
                 let tempItem = {...item};
-
-                const afterElementData = this.items.find((item) => item.id == afterElementId)
-                let tempafterElementData = {...afterElementData};
-
-                const itemIndex = this.items.findIndex((item) => item.id == this.dragging_id)
-                const afterElementDataIndex = this.items.findIndex((item) => item.id == afterElementId)
+                tempItem.id = last_el ? (+last_el.dataset.id) + 1 : tempItem.id;
                 
                 let tempItems = [...this.items];
-                tempItem.id = afterElementData.id;
-                tempafterElementData.id = item.id;
-                tempItems[afterElementDataIndex] = tempItem;
-                tempItems[itemIndex] = tempafterElementData;
-
+                tempItems.splice(itemIndex,1);
+                tempItems.push(tempItem);
                 this.items = [...tempItems];
-                // container.insertBefore(draggable, afterElement)
+                document.querySelector('.placeholder')?.remove();
+
+            } else {
+                // console.log(list);
+                let beforeElementId = beforeElement.dataset.id;                
+                let tempItem = {...item};
+
+                const itemIndex = this.items.findIndex((item) => item.id == this.dragging_id)
+                const beforeElementDataIndex = this.items.findIndex((item) => item.id == beforeElementId)
+                
+                let tempItems = [...this.items];
+                tempItems.splice(itemIndex,1);
+                tempItems.splice(beforeElementDataIndex,0,tempItem);
+                this.items = [...tempItems];
+                document.querySelector('.placeholder')?.remove();
             }
-            document.querySelector('.placeholder')?.remove();
         },
         onDragOver: function (container, list) {
             const draggableElements = [...container.target.querySelectorAll('.drag-el')]
@@ -146,17 +182,14 @@ new Vue({
                 }
             }, { offset: Number.NEGATIVE_INFINITY }).element
 
-            const item = this.items.find((item) => item.id == this.dragging_id)
-            item.list = list;
+            // const item = this.items.find((item) => item.id == this.dragging_id)
+            // item ? item.list = list : '';
 
             document.querySelector('.placeholder')?.remove();
             if (beforeElement == null) {
-                // container.appendChild(draggable)
+                container.currentTarget.insertAdjacentHTML('beforeend',"<div class='placeholder'></div>");
             } else {
-                // console.log(list);
                 beforeElement.insertAdjacentHTML('beforebegin',"<div class='placeholder'></div>");
-                // container.target.insertBefore("<h1>sfda</h1>", beforeElement)
-                console.log(beforeElement);
             }
 
         }
