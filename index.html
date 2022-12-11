@@ -24,10 +24,23 @@
 			margin-bottom: 10px;
 			padding: 5px;
 		}
+		
+		.category_group{
+			border: 1px solid red;
+			background-color: tomato;
+			padding: 15px;
+		}
 	</style>
 	<div class="" id="task_management2">
-		<div style="display: flex; gap: 20px; flex-wrap: wrap;">
-			<div class="drop-zone" 
+		<div style="display: flex; gap: 20px; flex-wrap: wrap;" 
+			@drop="category_drop($event)"
+			@dragover="category_drop($event)"
+			class="category_group">
+
+			<div class="drop-zone"
+				@dragstart="category_drag_start($event, parent, index1)" 
+				@dragend="category_drag_end($event, parent, index1)" 
+
 				v-for="(parent, index1) in items" 
 				:key="index1"
 				@drop="onDrop($event, parent)" 
@@ -35,11 +48,11 @@
 				@dragover.prevent 
 				@dragenter.prevent>
 
-				<p>{{parent.title}}</p>
+				<p draggable>{{parent.title}}</p>
 
 				<div v-for="(item, index) in parent.childrens" 
-					@dragend="onDragEnd"
 					@dragstart="startDrag($event, item, index, parent)" 
+					@dragend="onDragEnd"
 					:key="index" 
 					:data-serial="item.serial" 
 					:data-index="index"

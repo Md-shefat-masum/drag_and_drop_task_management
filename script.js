@@ -76,6 +76,10 @@ new Vue({
             dragging_mouse_y: null,
 
 			items: [],
+
+            category_dragging_item: {},
+            category_dragging_id: null,
+            
 		};
 	},
 	created: function () {
@@ -86,6 +90,7 @@ new Vue({
 			for (let category_id = 1; category_id <= 5; category_id++) {
 				let item = {
 					category_id: category_id,
+                    serial: category_id,
 					title: "category-" + category_id,
 					parent: 0,
 					childrens: [],
@@ -200,6 +205,20 @@ new Vue({
 				beforeElement.insertAdjacentHTML("beforebegin", "<div class='placeholder'></div>");
 			}
 		},
+
+        category_drop: function(event){
+            // console.log(event, event.target);
+            console.log(this.category_dragging_item, this.category_dragging_id);
+            let dragging_index = this.items.findIndex(i=>i.category_id == this.category_dragging_id)
+            this.items.splice(dragging_index,1);
+            this.items[this.items.length]={...this.category_dragging_item};
+        },
+        category_drag_start: function(event, element, index){
+            this.category_dragging_item = {...element};
+            this.category_dragging_id = element.category_id;
+            console.log(event, event.target, element, index);
+        },
+        category_drag_end: function(event, element, index){},
 	},
 	computed: {
 		listOne() {
