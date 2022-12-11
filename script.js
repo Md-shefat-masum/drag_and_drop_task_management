@@ -71,6 +71,10 @@ new Vue({
 			dragging_time_end: 0.5,
 			dragging_time_interval: null,
 
+            dragging_element: null,
+            dragging_mouse_x: null,
+            dragging_mouse_y: null,
+
 			items: [],
 		};
 	},
@@ -99,6 +103,8 @@ new Vue({
 			console.log(this.items);
 		},
 		startDrag: function (evt, item, index, parent) {
+            this.dragging_element = evt.target;
+            
 			evt.dataTransfer.dropEffect = "move";
 			evt.dataTransfer.effectAllowed = "move";
 

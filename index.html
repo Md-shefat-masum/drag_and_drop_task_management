@@ -42,10 +42,11 @@
 					@dragstart="startDrag($event, item, index, parent)" 
 					:key="index" 
 					:data-serial="item.serial" 
-					:data-index="index" 
+					:data-index="index"
+					draggable 
 					class="drag-el">
 
-					<button class="drag_btn" draggable>drug</button>
+					<a href="#">adsf a</a>
 					{{ item.title }}
 					
 				</div>

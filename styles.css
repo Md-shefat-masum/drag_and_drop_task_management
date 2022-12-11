@@ -19,8 +19,11 @@ body {
   cursor: move;
   border-radius: 10px;
 }
-.draggable.dragging {
-  opacity: 0.7;
+.dragging {
+  transform: rotate(1deg);
+}
+.dragging button {
+  opacity: 0.8;
 }
 .placeholder {
   background-color: rgba(0, 128, 0, 0.267);
