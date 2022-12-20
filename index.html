@@ -35,6 +35,8 @@
 		<div style="display: flex; gap: 20px; flex-wrap: wrap;" 
 			@drop="category_drop($event)"
 			@dragover="category_drop($event)"
+			@dragover.prevent 
+			@dragenter.prevent
 			class="category_group">
 
 			<div class="drop-zone"
@@ -45,10 +47,11 @@
 				:key="index1"
 				@drop="onDrop($event, parent)" 
 				@dragover="onDragOver($event, parent)"
-				@dragover.prevent 
+				@dragover.prevent
+				draggable
 				@dragenter.prevent>
 
-				<p draggable>{{parent.title}}</p>
+				<p >{{parent.title}}</p>
 
 				<div v-for="(item, index) in parent.childrens" 
 					@dragstart="startDrag($event, item, index, parent)" 
@@ -56,7 +59,7 @@
 					:key="index" 
 					:data-serial="item.serial" 
 					:data-index="index"
-					draggable 
+					 
 					class="drag-el">
 
 					<a href="#">adsf a</a>
