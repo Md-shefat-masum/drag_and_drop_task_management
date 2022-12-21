@@ -50,17 +50,17 @@ document.getElementById("task_management") &&
 
 				containers.forEach((container) => {
 					container.addEventListener("dragstart", () => {
-						container.classList.add("container_dragging");
+						!document.querySelector(".dragging") && container.classList.add("container_dragging");
 					});
 
 					container.addEventListener("dragend", () => {
-						container.classList.remove("container_dragging");
+						!document.querySelector(".dragging") && container.classList.remove("container_dragging");
 					});
 
 					container.addEventListener("dragover", (e) => {
 						e.preventDefault();
 						const draggable = document.querySelector(".dragging");
-						if(draggable){
+						if (draggable) {
 							const afterElement = this.getDragAfterElement(container, e.clientY, ".draggable:not(.dragging)");
 							if (afterElement == null) {
 								container.appendChild(draggable);
@@ -88,6 +88,7 @@ document.getElementById("task_management") &&
 					{ offset: Number.NEGATIVE_INFINITY }
 				).element;
 			},
+
 			getDragAfterElement: function (container, y, selector) {
 				const draggableElements = [...container.querySelectorAll(selector)];
 
