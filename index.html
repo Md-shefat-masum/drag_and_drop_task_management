@@ -19,14 +19,17 @@
 			@dragstart="container_dragging_start($event,category)"
 			@dragend="container_dragging_end($event)"
 			@drop="container_dragging_drop()"
-			@dragover.prevent="container_dragging_over($event)"
+			@dragover="container_dragging_over($event)"
 			:data-index="index"
 			:draggable="true">
 			<p>{{category.title}}-{{category.serial}}</p>
 			<p class="draggable" 
 				v-for="(item, index2) in category.childrens" :key="index2" 
-				@dragstart="item_dragging_start($event)"
+				@dragstart="item_dragging_start($event,index, index2)"
 				@dragend="item_dragging_end($event)"
+				@drop="item_dragging_drop()"
+				:data-parent_index="index"
+				:data-index="index2"
 				:draggable="true">
 				{{item.title}}
 			</p>

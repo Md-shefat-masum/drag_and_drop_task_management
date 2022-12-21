@@ -118,12 +118,16 @@ document.getElementById("task_management3") &&
 				leftOfElementIndex: null,
 
 				item_dragging_el: null,
+				item_index: null,
+				item_parent_index: null,
+				item_dropping_before_el_index: null,
+				item_dropping_before_el_parent_index: null,
+
 				items: [],
 			};
 		},
 		created: function () {
 			this.create_item();
-			let that = this;
 		},
 		methods: {
 			create_item: function () {
@@ -151,63 +155,133 @@ document.getElementById("task_management3") &&
 			wrapper_drag_over: function (event) {
 				let that = this;
 				const task_management = event.currentTarget;
-				
+
 				if (this.container_dragging_el) {
-					const leftOfElement = that.getDragLeftElement(task_management, event.clientX, ".container:not(.container_dragging)");
+					// const leftOfElement = that.getDragLeftElement(task_management, event.clientX, ".container:not(.container_dragging)");
+					const leftOfElement = that.getDragLeftElement(task_management, event.clientX, ".container");
+					document.querySelector(".placeholder")?.remove();
 					if (leftOfElement == null) {
 						// task_management.appendChild(this.container_dragging_el);
+						this.leftOfElementIndex = this.items.length - 1;
+						task_management.insertAdjacentHTML("beforeend", "<div class='placeholder'></div>");
 					} else {
 						// task_management.insertBefore(this.container_dragging_el, leftOfElement);
 						this.leftOfElementIndex = leftOfElement.dataset.index;
+						leftOfElement.insertAdjacentHTML("beforebegin", "<div class='placeholder'></div>");
 					}
 				}
 			},
-			container_dragging_start: function (event,item) {
-				this.container_dragging_el = event.currentTarget;
-				if(!this.item_dragging_el){
+			container_dragging_start: function (event, item) {
+				if (!this.item_dragging_el) {
+					this.container_dragging_el = event.currentTarget;
 					event.currentTarget.classList.add("container_dragging");
 					this.container_dragging_el_details = item;
 				}
 			},
 			container_dragging_end: function (event) {
 				this.container_dragging_el = null;
+				!this.item_dragging_el && document.querySelector(".placeholder")?.remove();
 				!this.item_dragging_el && event.currentTarget.classList.remove("container_dragging");
 			},
-			container_dragging_drop: function(){
-				if(this.container_dragging_el){
-					console.log(this.container_dragging_el_details);
-					console.log(this.leftOfElementIndex);
-					console.log(this.container_dragging_el);
+			container_dragging_drop: function () {
+				let items = [...this.items];
 
-					let item = {...this.container_dragging_el_details};
-					let category_index = this.items.findIndex(i=>i.id==item.id);
+				if (this.container_dragging_el) {
+					let item = { ...this.container_dragging_el_details };
+					let category_index = this.items.findIndex((i) => i.id == item.id);
 
-					let items = [...this.items];
-					items.splice(category_index,1);
-					items.splice(this.leftOfElementIndex,0,{...item});
+					items.splice(category_index, 1);
+					items.splice(this.leftOfElementIndex, 0, { ...item });
 					this.items = [...items];
-					console.log(items);
+
+					let task_index = [];
+					items.forEach((el, index) => {
+						task_index.push({
+							task_id: el.id,
+							serial: index,
+						});
+					});
+					console.log(task_index);
 				}
+
+				if (this.item_dragging_el) {
+					// console.log(
+					// 	this.item_index,
+					// 	this.item_parent_index,
+					// 	this.item_dropping_before_el_parent_index,
+					// 	this.item_dropping_before_el_index
+					// );
+					let item_list = items[this.item_parent_index].childrens;
+					let item = { ...item_list[this.item_index] };
+					item_list.splice(this.item_index, 1);
+
+					if (this.item_dropping_before_el_parent_index) {
+						let target_list = items[this.item_dropping_before_el_parent_index];
+						if (this.item_dropping_before_el_index) {
+							target_list.childrens.splice(this.item_dropping_before_el_index, 0, { ...item });
+						} else {
+							target_list.childrens.push({ ...item });
+						}
+						let sub_task_index = [];
+						target_list.childrens.forEach((el, index) => {
+							sub_task_index.push({
+								task_id: el.parent,
+								sub_task_id: el.id,
+								serial: index,
+							});
+						});
+						console.log(sub_task_index);
+					} else {
+						item_list.push({ ...item });
+					}
+					this.items = [...items];
+
+					let sub_task_index = [];
+					item_list.forEach((el, index) => {
+						sub_task_index.push({
+							task_id: el.parent,
+							sub_task_id: el.id,
+							serial: index,
+						});
+					});
+					console.log(sub_task_index);
+				}
+
+				document.querySelector(".placeholder")?.remove();
 			},
-			container_dragging_over: function(event){
+			container_dragging_over: function (event) {
 				const container = event.currentTarget;
 				if (this.item_dragging_el) {
 					const afterElement = this.getDragAfterElement(container, event.clientY, ".draggable:not(.dragging)");
+					document.querySelector(".placeholder")?.remove();
+
+					this.item_dropping_before_el_parent_index = container.dataset.index;
 					if (afterElement == null) {
-						container.appendChild(this.item_dragging_el);
+						// container.appendChild(this.item_dragging_el);
+						this.item_dropping_before_el_index = null;
+						container.insertAdjacentHTML("beforeend", "<div class='placeholder'></div>");
 					} else {
-						container.insertBefore(this.item_dragging_el, afterElement);
+						this.item_dropping_before_el_index = afterElement.dataset.index;
+						afterElement.insertAdjacentHTML("beforebegin", "<div draggable class='placeholder'></div>");
+						// container.insertBefore(this.item_dragging_el, afterElement);
 					}
 				}
 			},
 
-			item_dragging_start: function (event) {
+			item_dragging_start: function (event, parent_index, item_index) {
 				this.item_dragging_el = event.currentTarget;
+				this.item_parent_index = parent_index;
+				this.item_index = item_index;
 				event.currentTarget.classList.add("dragging");
 			},
 			item_dragging_end: function (event) {
 				this.item_dragging_el = null;
 				event.currentTarget.classList.remove("dragging");
+				document.querySelector(".placeholder")?.remove();
+			},
+
+			item_dragging_drop: function () {
+				// console.log(this.item_parent_index, this.item_index);
 			},
 
 			getDragLeftElement: function (container, x, selector) {

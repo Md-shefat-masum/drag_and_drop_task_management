@@ -49,5 +49,6 @@ body {
 }
 .container_dragging {
   background-color: rgba(255, 166, 0, 0.434);
+  opacity: 0.6;
 }
 /*# sourceMappingURL=./styles.css.map */
