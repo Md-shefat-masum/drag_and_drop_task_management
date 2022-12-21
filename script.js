@@ -108,6 +108,145 @@ document.getElementById("task_management") &&
 		},
 	});
 
+document.getElementById("task_management3") &&
+	new Vue({
+		el: "#task_management3",
+		data: function(){
+			return {
+				items: [],
+			}
+		},
+		created: function () {
+			this.create_item();
+			let that = this;
+			setTimeout(() => {
+				that.init_draggble();
+			}, 1000);
+		},
+		methods: {
+			create_item: function () {
+				for (let category_id = 1; category_id <= 5; category_id++) {
+					let item = {
+						id: category_id,
+						serial: category_id,
+						title: "category-" + category_id,
+						parent: 0,
+						childrens: [],
+					};
+					for (let children_id = 6; children_id <= 10; children_id++) {
+						item.childrens.push({
+							id: children_id,
+							serial: children_id,
+							title: "Item " + category_id + "-" + children_id,
+							parent: category_id,
+							childrens: [],
+						});
+					}
+					this.items.push({ ...item });
+				}
+				console.log(this.items);
+			},
+			init_draggble: function () {
+				const draggables = document.querySelectorAll(".draggable");
+				const container_draggable = document.querySelectorAll("container_draggable");
+				const containers = document.querySelectorAll(".container");
+				const task_management = document.getElementById("task_management3");
+
+				let that = this;
+				task_management.addEventListener("dragover", function (e) {
+					e.preventDefault();
+
+					const container_dragging = document.querySelector(".container_dragging");
+					if (container_dragging) {
+						const leftOfElement = that.getDragLeftElement(task_management, e.clientX, ".container:not(.container_dragging)");
+						if (leftOfElement == null) {
+							task_management.appendChild(container_dragging);
+						} else {
+							task_management.insertBefore(container_dragging, leftOfElement);
+						}
+					}
+				});
+
+				draggables.forEach((draggable) => {
+					draggable.addEventListener("dragstart", () => {
+						draggable.classList.add("dragging");
+					});
+
+					draggable.addEventListener("dragend", () => {
+						draggable.classList.remove("dragging");
+					});
+				});
+
+				container_draggable.forEach((draggable) => {
+					draggable.addEventListener("dragstart", () => {
+						draggable.parentNode.classList.add("container_dragging");
+					});
+
+					draggable.addEventListener("dragend", () => {
+						draggable.parentNode.classList.remove("container_dragging");
+					});
+				});
+
+				containers.forEach((container) => {
+					container.addEventListener("dragstart", () => {
+						!document.querySelector(".dragging") && container.classList.add("container_dragging");
+					});
+
+					container.addEventListener("dragend", () => {
+						!document.querySelector(".dragging") && container.classList.remove("container_dragging");
+					});
+
+					container.addEventListener("dragover", (e) => {
+						e.preventDefault();
+						const draggable = document.querySelector(".dragging");
+						if (draggable) {
+							const afterElement = this.getDragAfterElement(container, e.clientY, ".draggable:not(.dragging)");
+							if (afterElement == null) {
+								container.appendChild(draggable);
+							} else {
+								container.insertBefore(draggable, afterElement);
+							}
+						}
+					});
+				});
+			},
+
+			getDragLeftElement: function (container, x, selector) {
+				const draggableElements = [...container.querySelectorAll(selector)];
+
+				return draggableElements.reduce(
+					(closest, child) => {
+						const box = child.getBoundingClientRect();
+						const offset = x - box.left - box.width / 2;
+						if (offset < 0 && offset > closest.offset) {
+							return { offset: offset, element: child };
+						} else {
+							return closest;
+						}
+					},
+					{ offset: Number.NEGATIVE_INFINITY }
+				).element;
+			},
+
+			getDragAfterElement: function (container, y, selector) {
+				const draggableElements = [...container.querySelectorAll(selector)];
+
+				return draggableElements.reduce(
+					(closest, child) => {
+						const box = child.getBoundingClientRect();
+						const offset = y - box.top - box.height / 2;
+						if (offset < 0 && offset > closest.offset) {
+							return { offset: offset, element: child };
+						} else {
+							return closest;
+						}
+					},
+					{ offset: Number.NEGATIVE_INFINITY }
+				).element;
+			},
+		},
+	});
+
 document.getElementById("task_management2") &&
 	new Vue({
 		el: "#task_management2",
