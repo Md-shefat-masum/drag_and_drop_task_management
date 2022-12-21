@@ -34,4 +34,7 @@ body {
 .drag_btn {
   cursor: grab;
 }
+.container_dragging {
+  background-color: rgba(255, 166, 0, 0.434);
+}
 /*# sourceMappingURL=./styles.css.map */
