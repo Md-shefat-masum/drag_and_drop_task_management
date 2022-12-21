@@ -13,11 +13,21 @@
 
 <body>
 	<div class="container_wrapper" id="task_management3">
-		<div class="container container1" draggable>
-			<p class="container_draggable">box 1</p>
-			<p class="draggable" draggable="true">1</p>
-			<p class="draggable" draggable="true">2</p>
+		<div v-for="(category, index) in items" :key="index" 
+			class="container container1" 
+			draggable>
+			<p>{{category.title}}</p>
+			<p class="draggable" 
+				v-for="(item, index2) in category.childrens" :key="index2" 
+				draggable="true">
+				{{item.title}}
+			</p>
 		</div>
+	</div>
+	<br>
+	<br>
+	<br>
+	<div class="container_wrapper">
 		<div class="container container2" draggable>
 			<p class="container_draggable" >box 2</p>
 			<p class="draggable" draggable="true">3</p>
