@@ -13,6 +13,18 @@ body {
   padding: 24px;
   transition-duration: 0.5s;
 }
+.container.con2 {
+  background-color: red;
+}
+.container.con3 {
+  background-color: #1d5457;
+}
+.container.con4 {
+  background-color: #702e88;
+}
+.container.con5 {
+  background-color: #883b2e;
+}
 .draggable {
   padding: 1rem;
   background-color: white;

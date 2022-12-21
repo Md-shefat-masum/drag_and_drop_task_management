@@ -114,6 +114,9 @@ document.getElementById("task_management3") &&
 		data: function () {
 			return {
 				container_dragging_el: null,
+				container_dragging_el_details: null,
+				leftOfElementIndex: null,
+
 				item_dragging_el: null,
 				items: [],
 			};
@@ -152,19 +155,39 @@ document.getElementById("task_management3") &&
 				if (this.container_dragging_el) {
 					const leftOfElement = that.getDragLeftElement(task_management, event.clientX, ".container:not(.container_dragging)");
 					if (leftOfElement == null) {
-						task_management.appendChild(this.container_dragging_el);
+						// task_management.appendChild(this.container_dragging_el);
 					} else {
-						task_management.insertBefore(this.container_dragging_el, leftOfElement);
+						// task_management.insertBefore(this.container_dragging_el, leftOfElement);
+						this.leftOfElementIndex = leftOfElement.dataset.index;
 					}
 				}
 			},
-			container_dragging_start: function (event) {
+			container_dragging_start: function (event,item) {
 				this.container_dragging_el = event.currentTarget;
-				!this.item_dragging_el && event.currentTarget.classList.add("container_dragging");
+				if(!this.item_dragging_el){
+					event.currentTarget.classList.add("container_dragging");
+					this.container_dragging_el_details = item;
+				}
 			},
 			container_dragging_end: function (event) {
 				this.container_dragging_el = null;
 				!this.item_dragging_el && event.currentTarget.classList.remove("container_dragging");
+			},
+			container_dragging_drop: function(){
+				if(this.container_dragging_el){
+					console.log(this.container_dragging_el_details);
+					console.log(this.leftOfElementIndex);
+					console.log(this.container_dragging_el);
+
+					let item = {...this.container_dragging_el_details};
+					let category_index = this.items.findIndex(i=>i.id==item.id);
+
+					let items = [...this.items];
+					items.splice(category_index,1);
+					items.splice(this.leftOfElementIndex,0,{...item});
+					this.items = [...items];
+					console.log(items);
+				}
 			},
 			container_dragging_over: function(event){
 				const container = event.currentTarget;
@@ -177,6 +200,7 @@ document.getElementById("task_management3") &&
 					}
 				}
 			},
+
 			item_dragging_start: function (event) {
 				this.item_dragging_el = event.currentTarget;
 				event.currentTarget.classList.add("dragging");

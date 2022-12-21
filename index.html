@@ -13,14 +13,16 @@
 
 <body>
 	<div class="container_wrapper" id="task_management3" 
-		@dragover.prevent="wrapper_drag_over($event)">
-		<div v-for="(category, index) in items" :key="index" 
-			class="container container1" 
-			@dragstart="container_dragging_start($event)"
+	@dragover.prevent="wrapper_drag_over($event)">
+	<div v-for="(category, index) in items" :key="index" 
+			:class="`container container1 con${category.id}`" 
+			@dragstart="container_dragging_start($event,category)"
 			@dragend="container_dragging_end($event)"
+			@drop="container_dragging_drop()"
 			@dragover.prevent="container_dragging_over($event)"
+			:data-index="index"
 			:draggable="true">
-			<p>{{category.title}}</p>
+			<p>{{category.title}}-{{category.serial}}</p>
 			<p class="draggable" 
 				v-for="(item, index2) in category.childrens" :key="index2" 
 				@dragstart="item_dragging_start($event)"
