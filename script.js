@@ -9,21 +9,24 @@ document.getElementById("task_management") &&
 		methods: {
 			init_draggble: function () {
 				const draggables = document.querySelectorAll(".draggable");
+				const container_draggable = document.querySelectorAll("container_draggable");
 				const containers = document.querySelectorAll(".container");
-				const task_management = document.getElementById('task_management');
+				const task_management = document.getElementById("task_management");
 
 				let that = this;
-				task_management.addEventListener('dragover',function(e){
-					e.preventDefault()
-					const leftOfElement = that.getDragLeftElement(task_management, e.clientX, ".container:not(.container_dragging)");
+				task_management.addEventListener("dragover", function (e) {
+					e.preventDefault();
 
-					const container_dragging = document.querySelector('.container_dragging');
-					if (leftOfElement == null) {
-						task_management.appendChild(container_dragging);
-					} else {
-						task_management.insertBefore(container_dragging, leftOfElement);
+					const container_dragging = document.querySelector(".container_dragging");
+					if (container_dragging) {
+						const leftOfElement = that.getDragLeftElement(task_management, e.clientX, ".container:not(.container_dragging)");
+						if (leftOfElement == null) {
+							task_management.appendChild(container_dragging);
+						} else {
+							task_management.insertBefore(container_dragging, leftOfElement);
+						}
 					}
-				})
+				});
 
 				draggables.forEach((draggable) => {
 					draggable.addEventListener("dragstart", () => {
@@ -35,28 +38,37 @@ document.getElementById("task_management") &&
 					});
 				});
 
+				container_draggable.forEach((draggable) => {
+					draggable.addEventListener("dragstart", () => {
+						draggable.parentNode.classList.add("container_dragging");
+					});
+
+					draggable.addEventListener("dragend", () => {
+						draggable.parentNode.classList.remove("container_dragging");
+					});
+				});
+
 				containers.forEach((container) => {
-					container.addEventListener("dragstart", function () {
+					container.addEventListener("dragstart", () => {
 						container.classList.add("container_dragging");
 					});
 
-					container.addEventListener("dragend", function () {
+					container.addEventListener("dragend", () => {
 						container.classList.remove("container_dragging");
 					});
 
-					const container_dragging = document.querySelector('.container_dragging');
-
-					const draggable = document.querySelector(".dragging");
-					draggable &&
-						container.addEventListener("dragover", (e) => {
-							e.preventDefault();
+					container.addEventListener("dragover", (e) => {
+						e.preventDefault();
+						const draggable = document.querySelector(".dragging");
+						if(draggable){
 							const afterElement = this.getDragAfterElement(container, e.clientY, ".draggable:not(.dragging)");
 							if (afterElement == null) {
 								container.appendChild(draggable);
 							} else {
 								container.insertBefore(draggable, afterElement);
 							}
-						});
+						}
+					});
 				});
 			},
 
