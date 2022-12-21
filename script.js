@@ -10,6 +10,20 @@ document.getElementById("task_management") &&
 			init_draggble: function () {
 				const draggables = document.querySelectorAll(".draggable");
 				const containers = document.querySelectorAll(".container");
+				const task_management = document.getElementById('task_management');
+
+				let that = this;
+				task_management.addEventListener('dragover',function(e){
+					e.preventDefault()
+					const leftOfElement = that.getDragLeftElement(task_management, e.clientX, ".container:not(.container_dragging)");
+
+					const container_dragging = document.querySelector('.container_dragging');
+					if (leftOfElement == null) {
+						task_management.appendChild(container_dragging);
+					} else {
+						task_management.insertBefore(container_dragging, leftOfElement);
+					}
+				})
 
 				draggables.forEach((draggable) => {
 					draggable.addEventListener("dragstart", () => {
@@ -25,15 +39,18 @@ document.getElementById("task_management") &&
 					container.addEventListener("dragstart", function () {
 						container.classList.add("container_dragging");
 					});
+
 					container.addEventListener("dragend", function () {
 						container.classList.remove("container_dragging");
 					});
+
+					const container_dragging = document.querySelector('.container_dragging');
 
 					const draggable = document.querySelector(".dragging");
 					draggable &&
 						container.addEventListener("dragover", (e) => {
 							e.preventDefault();
-							const afterElement = this.getDragAfterElement(container, e.clientY);
+							const afterElement = this.getDragAfterElement(container, e.clientY, ".draggable:not(.dragging)");
 							if (afterElement == null) {
 								container.appendChild(draggable);
 							} else {
@@ -43,8 +60,24 @@ document.getElementById("task_management") &&
 				});
 			},
 
-			getDragAfterElement: function (container, y) {
-				const draggableElements = [...container.querySelectorAll(".draggable:not(.dragging)")];
+			getDragLeftElement: function (container, x, selector) {
+				const draggableElements = [...container.querySelectorAll(selector)];
+
+				return draggableElements.reduce(
+					(closest, child) => {
+						const box = child.getBoundingClientRect();
+						const offset = x - box.left - box.width / 2;
+						if (offset < 0 && offset > closest.offset) {
+							return { offset: offset, element: child };
+						} else {
+							return closest;
+						}
+					},
+					{ offset: Number.NEGATIVE_INFINITY }
+				).element;
+			},
+			getDragAfterElement: function (container, y, selector) {
+				const draggableElements = [...container.querySelectorAll(selector)];
 
 				return draggableElements.reduce(
 					(closest, child) => {
