@@ -111,17 +111,16 @@ document.getElementById("task_management") &&
 document.getElementById("task_management3") &&
 	new Vue({
 		el: "#task_management3",
-		data: function(){
+		data: function () {
 			return {
+				container_dragging_el: null,
+				item_dragging_el: null,
 				items: [],
-			}
+			};
 		},
 		created: function () {
 			this.create_item();
 			let that = this;
-			setTimeout(() => {
-				that.init_draggble();
-			}, 1000);
 		},
 		methods: {
 			create_item: function () {
@@ -146,69 +145,45 @@ document.getElementById("task_management3") &&
 				}
 				console.log(this.items);
 			},
-			init_draggble: function () {
-				const draggables = document.querySelectorAll(".draggable");
-				const container_draggable = document.querySelectorAll("container_draggable");
-				const containers = document.querySelectorAll(".container");
-				const task_management = document.getElementById("task_management3");
-
+			wrapper_drag_over: function (event) {
 				let that = this;
-				task_management.addEventListener("dragover", function (e) {
-					e.preventDefault();
-
-					const container_dragging = document.querySelector(".container_dragging");
-					if (container_dragging) {
-						const leftOfElement = that.getDragLeftElement(task_management, e.clientX, ".container:not(.container_dragging)");
-						if (leftOfElement == null) {
-							task_management.appendChild(container_dragging);
-						} else {
-							task_management.insertBefore(container_dragging, leftOfElement);
-						}
+				const task_management = event.currentTarget;
+				
+				if (this.container_dragging_el) {
+					const leftOfElement = that.getDragLeftElement(task_management, event.clientX, ".container:not(.container_dragging)");
+					if (leftOfElement == null) {
+						task_management.appendChild(this.container_dragging_el);
+					} else {
+						task_management.insertBefore(this.container_dragging_el, leftOfElement);
 					}
-				});
-
-				draggables.forEach((draggable) => {
-					draggable.addEventListener("dragstart", () => {
-						draggable.classList.add("dragging");
-					});
-
-					draggable.addEventListener("dragend", () => {
-						draggable.classList.remove("dragging");
-					});
-				});
-
-				container_draggable.forEach((draggable) => {
-					draggable.addEventListener("dragstart", () => {
-						draggable.parentNode.classList.add("container_dragging");
-					});
-
-					draggable.addEventListener("dragend", () => {
-						draggable.parentNode.classList.remove("container_dragging");
-					});
-				});
-
-				containers.forEach((container) => {
-					container.addEventListener("dragstart", () => {
-						!document.querySelector(".dragging") && container.classList.add("container_dragging");
-					});
-
-					container.addEventListener("dragend", () => {
-						!document.querySelector(".dragging") && container.classList.remove("container_dragging");
-					});
-
-					container.addEventListener("dragover", (e) => {
-						e.preventDefault();
-						const draggable = document.querySelector(".dragging");
-						if (draggable) {
-							const afterElement = this.getDragAfterElement(container, e.clientY, ".draggable:not(.dragging)");
-							if (afterElement == null) {
-								container.appendChild(draggable);
-							} else {
-								container.insertBefore(draggable, afterElement);
-							}
-						}
-					});
-				});
+				}
+			},
+			container_dragging_start: function (event) {
+				this.container_dragging_el = event.currentTarget;
+				!this.item_dragging_el && event.currentTarget.classList.add("container_dragging");
+			},
+			container_dragging_end: function (event) {
+				this.container_dragging_el = null;
+				!this.item_dragging_el && event.currentTarget.classList.remove("container_dragging");
+			},
+			container_dragging_over: function(event){
+				const container = event.currentTarget;
+				if (this.item_dragging_el) {
+					const afterElement = this.getDragAfterElement(container, event.clientY, ".draggable:not(.dragging)");
+					if (afterElement == null) {
+						container.appendChild(this.item_dragging_el);
+					} else {
+						container.insertBefore(this.item_dragging_el, afterElement);
+					}
+				}
+			},
+			item_dragging_start: function (event) {
+				this.item_dragging_el = event.currentTarget;
+				event.currentTarget.classList.add("dragging");
+			},
+			item_dragging_end: function (event) {
+				this.item_dragging_el = null;
+				event.currentTarget.classList.remove("dragging");
 			},
 
 			getDragLeftElement: function (container, x, selector) {

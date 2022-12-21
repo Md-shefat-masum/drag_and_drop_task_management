@@ -12,14 +12,20 @@
 </head>
 
 <body>
-	<div class="container_wrapper" id="task_management3">
+	<div class="container_wrapper" id="task_management3" 
+		@dragover.prevent="wrapper_drag_over($event)">
 		<div v-for="(category, index) in items" :key="index" 
 			class="container container1" 
-			draggable>
+			@dragstart="container_dragging_start($event)"
+			@dragend="container_dragging_end($event)"
+			@dragover.prevent="container_dragging_over($event)"
+			:draggable="true">
 			<p>{{category.title}}</p>
 			<p class="draggable" 
 				v-for="(item, index2) in category.childrens" :key="index2" 
-				draggable="true">
+				@dragstart="item_dragging_start($event)"
+				@dragend="item_dragging_end($event)"
+				:draggable="true">
 				{{item.title}}
 			</p>
 		</div>

@@ -21,6 +21,7 @@ body {
 }
 .dragging {
   transform: rotate(1deg);
+  background-color: rgba(255, 166, 0, 0.434);
 }
 .dragging button {
   opacity: 0.8;
