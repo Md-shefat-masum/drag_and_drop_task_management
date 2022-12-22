@@ -245,12 +245,15 @@ document.getElementById("task_management3") &&
 						});
 					});
 					console.log(sub_task_index);
+					this.item_dragging_el = null;
 				}
 
 				document.querySelector(".placeholder")?.remove();
 			},
 			container_dragging_over: function (event) {
 				const container = event.currentTarget;
+				this.item_dropping_before_el_parent_index = null;
+
 				if (this.item_dragging_el) {
 					const afterElement = this.getDragAfterElement(container, event.clientY, ".draggable:not(.dragging)");
 					document.querySelector(".placeholder")?.remove();
