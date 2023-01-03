@@ -3,91 +3,55 @@
 
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="wserialth=device-wserialth, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<link rel="stylesheet" href="styles.css">
-	<script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script> -->
+	<script src="./vue.js"></script>
 	<script src="script.js" defer></script>
 	<title>Document</title>
 </head>
 
 <body>
-	<style>
-		.drop-zone {
-			background-color: #eee;
-			margin-bottom: 10px;
-			padding: 10px;
-		}
-
-		.drag-el {
-			background-color: #fff;
-			margin-bottom: 10px;
-			padding: 5px;
-		}
-		
-		.category_group{
-			border: 1px solid red;
-			background-color: tomato;
-			padding: 15px;
-		}
-	</style>
-	<div class="" id="task_management2">
-		<div style="display: flex; gap: 20px; flex-wrap: wrap;" 
-			@drop="category_drop($event)"
-			@dragover="category_drop($event)"
-			@dragover.prevent 
-			@dragenter.prevent
-			class="category_group">
-
-			<div class="drop-zone"
-				@dragstart="category_drag_start($event, parent, index1)" 
-				@dragend="category_drag_end($event, parent, index1)" 
-
-				v-for="(parent, index1) in items" 
-				:key="index1"
-				@drop="onDrop($event, parent)" 
-				@dragover="onDragOver($event, parent)"
-				@dragover.prevent
-				draggable
-				@dragenter.prevent>
-
-				<p >{{parent.title}}</p>
-
-				<div v-for="(item, index) in parent.childrens" 
-					@dragstart="startDrag($event, item, index, parent)" 
-					@dragend="onDragEnd"
-					:key="index" 
-					:data-serial="item.serial" 
-					:data-index="index"
-					 
-					class="drag-el">
-
-					<a href="#">adsf a</a>
-					{{ item.title }}
-					
-				</div>
-
-			</div>
+	<div class="container_wrapper" id="task_management3" 
+	@dragover.prevent="wrapper_drag_over($event)">
+	<div v-for="(category, index) in items" :key="index" 
+			:class="`container container1 con${category.id}`" 
+			@dragstart="container_dragging_start($event,category)"
+			@dragend="container_dragging_end($event)"
+			@drop="container_dragging_drop()"
+			@dragover="container_dragging_over($event)"
+			:data-index="index"
+			:draggable="true">
+			<p>{{category.title}}-{{category.serial}}</p>
+			<p class="draggable" 
+				v-for="(item, index2) in category.childrens" :key="index2" 
+				@dragstart="item_dragging_start($event,index, index2)"
+				@dragend="item_dragging_end($event)"
+				@drop="item_dragging_drop()"
+				:data-parent_index="index"
+				:data-index="index2"
+				:draggable="true">
+				{{item.title}}
+			</p>
+		</div>
+	</div>
+	<br>
+	<br>
+	<br>
+	<div class="container_wrapper">
+		<div class="container container2" draggable>
+			<p class="container_draggable" >box 2</p>
+			<p class="draggable" draggable="true">3</p>
+			<p class="draggable" draggable="true">4</p>
+		</div>
+		<div class="container container3" draggable>
+			<p class="container_draggable" >box 3</p>
+			<p class="draggable" draggable="true">5</p>
+			<p class="draggable" draggable="true">6</p>
 		</div>
 	</div>
 
-	<div class="drop-zone" @drop="onDrop($event, 1)" @dragover="onDragOver($event, 1)" @dragover.prevent
-		@dragenter.prevent>
-		<div v-for="(item, index) in listOne" :key="index" @dragend="onDragEnd" @dragstart="startDrag($event, item)"
-			:data-serial="item.serial" :data-index="index" class="drag-el">
-			<button class="drag_btn" draggable>drug</button>
-			{{ item.title }}
-		</div>
-	</div>
-	<!-- @dragover="onDragOver($event, 2)" -->
-	<div class="drop-zone" @drop="onDrop($event, 2)" @dragover="onDragOver($event, 2)" @dragend="onDragEnd"
-		@dragover.prevent @dragenter.prevent>
-		<div v-for="(item, index) in listTwo" :key="index" @dragstart="startDrag($event, item)"
-			:data-serial="item.serial" :data-index="index" class="drag-el">
-			<button class="drag_btn" draggable>drug</button>
-			{{ item.title }}
-		</div>
-	</div>
 </body>
 
 </html>

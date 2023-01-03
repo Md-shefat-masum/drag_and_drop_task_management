@@ -13,6 +13,18 @@ body {
   padding: 24px;
   transition-duration: 0.5s;
 }
+.container.con2 {
+  background-color: red;
+}
+.container.con3 {
+  background-color: #1d5457;
+}
+.container.con4 {
+  background-color: #702e88;
+}
+.container.con5 {
+  background-color: #883b2e;
+}
 .draggable {
   padding: 1rem;
   background-color: white;
@@ -21,6 +33,7 @@ body {
 }
 .dragging {
   transform: rotate(1deg);
+  background-color: rgba(255, 166, 0, 0.434);
 }
 .dragging button {
   opacity: 0.8;
@@ -33,5 +46,9 @@ body {
 }
 .drag_btn {
   cursor: grab;
+}
+.container_dragging {
+  background-color: rgba(255, 166, 0, 0.434);
+  opacity: 0.6;
 }
 /*# sourceMappingURL=./styles.css.map */

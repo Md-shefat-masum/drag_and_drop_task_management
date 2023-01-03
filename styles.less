@@ -13,6 +13,19 @@ body {
     min-width: 200px;
     padding: 24px;
     transition-duration: .5s;
+
+    &.con2{
+        background-color: red;
+    }
+    &.con3{
+        background-color: rgb(29, 84, 87);
+    }
+    &.con4{
+        background-color: rgb(112, 46, 136);
+    }
+    &.con5{
+        background-color: rgb(136, 59, 46);
+    }
 }
 
 .draggable {
@@ -24,6 +37,7 @@ body {
 
 .dragging {
     transform: rotate(1deg);
+    background-color: rgba(255, 166, 0, 0.434);
 }
 .dragging button{
     opacity: .8;
@@ -38,4 +52,9 @@ body {
 
 .drag_btn{
     cursor: grab;
+}
+
+.container_dragging{
+    background-color: rgba(255, 166, 0, 0.434);
+    opacity: .6;
 }
