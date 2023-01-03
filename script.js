@@ -10,6 +10,7 @@ document.getElementById("task_management") &&
 			init_draggble: function () {
 				const draggables = document.querySelectorAll(".draggable");
 				const containers = document.querySelectorAll(".container");
+				const container_wrapper = document.getElementById("task_management");
 
 				draggables.forEach((draggable) => {
 					draggable.addEventListener("dragstart", () => {
@@ -21,15 +22,33 @@ document.getElementById("task_management") &&
 					});
 				});
 
+				container_wrapper.addEventListener("dragover",function(e){
+					e.preventDefault();
+					let container_dragging_item = document.querySelector('.container_dragging');
+					console.log(container_dragging_item);
+					if(container_dragging_item.length){
+						console.log(e.currentTarget);
+					}
+				})
+
 				containers.forEach((container) => {
+					container.addEventListener("dragstart", () => {
+						container.classList.add("container_dragging");
+					});
+					container.addEventListener("dragend", () => {
+						container.classList.remove("container_dragging");
+					});
+
 					container.addEventListener("dragover", (e) => {
 						e.preventDefault();
 						const afterElement = this.getDragAfterElement(container, e.clientY);
 						const draggable = document.querySelector(".dragging");
-						if (afterElement == null) {
-							container.appendChild(draggable);
-						} else {
-							container.insertBefore(draggable, afterElement);
+						if(draggable){
+							if (afterElement == null) {
+								container.appendChild(draggable);
+							} else {
+								container.insertBefore(draggable, afterElement);
+							}
 						}
 					});
 				});
@@ -54,6 +73,7 @@ document.getElementById("task_management") &&
 		},
 	});
 
+document.getElementById('task_management2') &&
 new Vue({
 	el: "#task_management2",
 	data() {
